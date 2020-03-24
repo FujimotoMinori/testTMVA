@@ -99,6 +99,7 @@ void testVBS(){
 	//tsignal->SetBranchAddress( "var1", &userVar1 );
 	//tsignal->SetBranchAddress( "var2", &userVar2 );
 	//signal
+	Float_t weight;
 	tsignal->SetBranchAddress("MTagResJets",        &MTagResJets);
 	tsignal->SetBranchAddress("DeltaEtaTagResJets", &DeltaEtaTagResJets);
 	tsignal->SetBranchAddress("DeltaEtaSignalJets", &DeltaEtaSignalJets);
@@ -111,6 +112,7 @@ void testVBS(){
 	tsignal->SetBranchAddress("NTrackJets",         &NTrackJets);
 	tsignal->SetBranchAddress("Mlljj",              &Mlljj);
 	tsignal->SetBranchAddress("xiVRes",             &xiVRes);
+	tsignal->SetBranchAddress("weight",             &weight);
 	//background
 	tbackground->SetBranchAddress("MTagResJets",        &MTagResJets);
 	tbackground->SetBranchAddress("DeltaEtaTagResJets", &DeltaEtaTagResJets);
@@ -124,6 +126,7 @@ void testVBS(){
 	tbackground->SetBranchAddress("NTrackJets",         &NTrackJets);
 	tbackground->SetBranchAddress("Mlljj",              &Mlljj);
 	tbackground->SetBranchAddress("xiVRes",             &xiVRes);
+	tbackground->SetBranchAddress("weight",             &weight);
 	//Zjets
 	tZjets->SetBranchAddress("MTagResJets",        &MTagResJets);
 	tZjets->SetBranchAddress("DeltaEtaTagResJets", &DeltaEtaTagResJets);
@@ -137,6 +140,7 @@ void testVBS(){
 	tZjets->SetBranchAddress("NTrackJets",         &NTrackJets);
 	tZjets->SetBranchAddress("Mlljj",              &Mlljj);
 	tZjets->SetBranchAddress("xiVRes",             &xiVRes);
+	tZjets->SetBranchAddress("weight",             &weight);
 	//ttbar
 	tttbar->SetBranchAddress("MTagResJets",        &MTagResJets);
 	tttbar->SetBranchAddress("DeltaEtaTagResJets", &DeltaEtaTagResJets);
@@ -150,6 +154,7 @@ void testVBS(){
 	tttbar->SetBranchAddress("NTrackJets",         &NTrackJets);
 	tttbar->SetBranchAddress("Mlljj",              &Mlljj);
 	tttbar->SetBranchAddress("xiVRes",             &xiVRes);
+	tttbar->SetBranchAddress("weight",             &weight);
         std::cout << "set branches" << std::endl;
 
 	// Efficiency calculator for cut method
@@ -166,7 +171,7 @@ void testVBS(){
 		//var1 = userVar1 + userVar2;
 		//var2 = userVar1 - userVar2;
 		// Return the MVA outputs and fill into histograms
-		histBdt ->Fill(reader->EvaluateMVA("BDT method") );
+		histBdt ->Fill(reader->EvaluateMVA("BDT method"),weight);
 	}
         /*
         //bg
@@ -184,7 +189,7 @@ void testVBS(){
 		if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 		tZjets->GetEntry(ievt);
 		// Return the MVA outputs and fill into histograms
-		histBdtZjets ->Fill(reader->EvaluateMVA("BDT method") );
+		histBdtZjets ->Fill(reader->EvaluateMVA("BDT method"),weight);
 	}
         //ttbar
         std::cout << "--- Processing: " << tttbar->GetEntries() << " events" << std::endl;
@@ -192,7 +197,7 @@ void testVBS(){
 		if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 		tttbar->GetEntry(ievt);
 		// Return the MVA outputs and fill into histograms
-		histBdtttbar ->Fill(reader->EvaluateMVA("BDT method") );
+		histBdtttbar ->Fill(reader->EvaluateMVA("BDT method"),weight);
 	}
      
 	// --- Write histograms
