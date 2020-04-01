@@ -57,6 +57,9 @@
 	// Add an arbitrary number of signal or background trees
 	loader.AddSignalTree    (tsignal,     1.0);   //signal weight  = 1
 	loader.AddBackgroundTree(tbackground, 1.0);   //background weight = 1
+        // Setting individual event weights (variables must exist in the original TTree)
+        loader.SetSignalWeightExpression("weight");
+        loader.SetBackgroundWeightExpression("weight");
 	loader.PrepareTrainingAndTestTree(mycuts, mycutb,
 			"nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=NumEvents:!V" );  //nTrain = 0 means to split total sample in half
 

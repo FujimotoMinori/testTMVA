@@ -3,7 +3,6 @@
 
 void testVBS(){
 	// Create the Reader object
-
 	TMVA::Reader *reader = new TMVA::Reader( "!Color:!Silent" );
 
 	// Create a set of variables and declare them to the reader
@@ -42,24 +41,11 @@ void testVBS(){
         // Book output histograms
 	UInt_t nbin = 100;
 	TH1F* histBdt = new TH1F("MVA_BDT", "MVA_BDT", nbin, -0.8, 0.8 );
-	//TH1F* histBdtBg = new TH1F("MVA_BDTBg", "MVA_BDTBg", nbin, -0.8, 0.8 );
+	TH1F* histBdtBg = new TH1F("MVA_BDTBg", "MVA_BDTBg", nbin, -0.8, 0.8 );
 	TH1F* histBdtZjets = new TH1F("MVA_BDTZjets", "MVA_BDTZjets", nbin, -0.8, 0.8 );
 	TH1F* histBdtttbar = new TH1F("MVA_BDTttbar", "MVA_BDTttbar", nbin, -0.8, 0.8 );
 
 	// Prepare input tree (this must be replaced by your data source)
-	// in this example, there is a toy tree with signal and one with background events
-	// we'll later on use only the "signal" events for the test in this example.
-	/*
-	TFile *input(0);
-	TString fname = "./tmva_example.root";
-        input = TFile::Open( fname ); // check if file in local directory exists
-	if (!input) {
-		std::cout << "ERROR: could not open data file" << std::endl;
-		exit(1);
-	}
-	std::cout << "--- TMVAClassificationApp    : Using input file: " << input->GetName() << std::endl;
-        */
-
         TChain* tsignal = new TChain("Nominal");
         TChain* tbackground = new TChain("Nominal");
         TChain* tZjets = new TChain("Nominal");
@@ -83,6 +69,7 @@ void testVBS(){
 	tZjets->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Zee*.root");
 	tZjets->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Ztautau*.root");
 	tttbar->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ttbar_dilep_PwPy8-*.root");
+
 	// Event loop
 
 	// Prepare the event tree
@@ -90,14 +77,6 @@ void testVBS(){
 	// - You can use the same variables as above which is slightly faster,
 	//   but of course you can use different ones and copy the values inside the event loop
 	
-	/*
-	std::cout << "--- Select signal sample" << std::endl;
-	TTree* theTree = (TTree*)input->Get("TreeS");
-        */
-
-	//Float_t userVar1, userVar2;
-	//tsignal->SetBranchAddress( "var1", &userVar1 );
-	//tsignal->SetBranchAddress( "var2", &userVar2 );
 	//signal
 	Float_t weight;
 	tsignal->SetBranchAddress("MTagResJets",        &MTagResJets);
@@ -161,28 +140,22 @@ void testVBS(){
 	Int_t    nSelCutsGA = 0;
 	Double_t effS       = 0.7;
 
-	std::vector<Float_t> vecVar(4); // vector for EvaluateMVA tests
-
         //signal
         std::cout << "--- Processing: " << tsignal->GetEntries() << " events" << std::endl;
 	for (Long64_t ievt=0; ievt<tsignal->GetEntries();ievt++) {
 		if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 		tsignal->GetEntry(ievt);
-		//var1 = userVar1 + userVar2;
-		//var2 = userVar1 - userVar2;
 		// Return the MVA outputs and fill into histograms
 		histBdt ->Fill(reader->EvaluateMVA("BDT method"),weight);
 	}
-        /*
         //bg
         std::cout << "--- Processing: " << tbackground->GetEntries() << " events" << std::endl;
 	for (Long64_t ievt=0; ievt<tbackground->GetEntries();ievt++) {
 		if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 		tbackground->GetEntry(ievt);
 		// Return the MVA outputs and fill into histograms
-		histBdtBg ->Fill(reader->EvaluateMVA("BDT method") );
+		histBdtBg ->Fill(reader->EvaluateMVA("BDT method"),weight);
 	}
-        */
         //Zjets
         std::cout << "--- Processing: " << tZjets->GetEntries() << " events" << std::endl;
 	for (Long64_t ievt=0; ievt<tZjets->GetEntries();ievt++) {
@@ -203,7 +176,7 @@ void testVBS(){
 	// --- Write histograms
 	TFile *target = new TFile( "TMVApp.root","RECREATE" ); 
 	histBdt ->Write();
-	//histBdtBg ->Write();
+	histBdtBg ->Write();
 	histBdtZjets ->Write();
 	histBdtttbar ->Write();
 	target->Close();
