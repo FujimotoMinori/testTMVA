@@ -79,27 +79,29 @@ void testVBScategory(){
 	tstop->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/stopt_PwPy8-*.root");
 	tstop->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/stopWt_dilep_PwPy8-*.root");
 	tDiboson->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ZqqZll_Sh221-*.root");
-	tDiboson->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ZqqZvv_Sh221-*.root");
+	//tDiboson->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ZqqZvv_Sh221-*.root");
 	tDiboson->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/WqqZll_Sh221-*.root");
-	tDiboson->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/WqqWlv_Sh221-*.root");
+	//tDiboson->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/WqqWlv_Sh221-*.root");
 	tWjets->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Wenu*.root");
 	tWjets->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Wmunu*.root");
 	tWjets->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Wtaunu*.root");
 
 	// --- Prepare the event tree
 	vector<TChain*> sampleList;
-	sampleList.push_back(tdata);
-	sampleList.push_back(tsignal);
-	sampleList.push_back(tZjets);
-	sampleList.push_back(tttbar);
-	sampleList.push_back(tstop);
-	sampleList.push_back(tDiboson);
-	sampleList.push_back(tWjets);
+	sampleList.push_back(tdata);         //0
+	sampleList.push_back(tsignal);       //1
+	sampleList.push_back(tZjets);        //2
+	sampleList.push_back(tttbar);        //3
+	sampleList.push_back(tstop);         //4
+	sampleList.push_back(tDiboson);      //5
+	sampleList.push_back(tWjets);        //6
 	TFile *target = new TFile( "TMVAppcategory.root","RECREATE" ); 
 	UInt_t nbin = 100;
 	TH1F* h[sampleList.size()+1];
 	int i =0;
 	for (const auto& x : sampleList) {
+		std::cout << "--- numbers: " << i << " --------------------------------- " << std::endl;
+		std::cout << "--- number of events: " << x->GetEntries() << " events" << std::endl;
 		h[i] = new TH1F(Form("MVA_BDT_%d",i), Form("MVA_BDT_%d",i), nbin, -0.8, 0.8 );
 		setBranch(x, data);
 		std::cout << "--- number of events: " << x->GetEntries() << " events" << std::endl;
