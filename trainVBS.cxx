@@ -1,8 +1,6 @@
 {
 	TMVA::Tools::Instance();
 
-	//auto inputFile = TFile::Open("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0318/fetch/data-MVATree/EWVVjj_MGPy8-1.root");
-	//auto inputFileBG = TFile::Open("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0318/fetch/data-MVATree/ZeeB_Sh221-1.root");
 	//std::cout << "--- TMVAClassification   : Using input file: " << inputFile->GetName() << std::endl;
 	auto outputFile = TFile::Open("TMVAOutputCVtestVBS.root", "RECREATE");
 
@@ -13,7 +11,7 @@
 	TMVA::DataLoader loader("dataset");
 
 	// Define the input variables that chall be used for the MVA training
-	// 12 variables for resolved regime
+	// 16 variables for resolved regime
 	loader.AddVariable("MTagResJets");
 	loader.AddVariable("DeltaEtaTagResJets");
 	loader.AddVariable("DeltaEtaSignalJets");
@@ -23,9 +21,13 @@
 	loader.AddVariable("PtTagResJet2");
 	loader.AddVariable("WidthTagResJet1");
 	loader.AddVariable("WidthTagResJet2");
-	loader.AddVariable("NTrackJets");
 	loader.AddVariable("Mlljj");
 	loader.AddVariable("xiVRes");
+	loader.AddVariable("NTrackJets", 'I');
+	loader.AddVariable("NumTrkPt500SigJet1", 'I');
+	//loader.AddVariable("NumTrkPt500SigJet2", 'I');
+	loader.AddVariable("NumTrkPt500TagResJet1", 'I');
+	loader.AddVariable("NumTrkPt500TagResJet2", 'I');
         // additional variables for resolved regime
 	//loader.AddVariable("AzvRes");
 
@@ -33,21 +35,22 @@
 	//TTree *tsignal, *tbackground;
         TChain* tsignal = new TChain("Nominal");
         TChain* tbackground = new TChain("Nominal");
-	tsignal->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/EWVVjj_MGPy8-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Zmumu*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Zee*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Ztautau*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ttbar_dilep_PwPy8-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/stops_PwPy8-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/stopt_PwPy8-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/stopWt_dilep_PwPy8-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ZqqZll_Sh221-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/ZqqZvv_Sh221-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/WqqZll_Sh221-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/WqqWlv_Sh221-*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Wenu*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Wmunu*.root");
-	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0322_forMVATree/fetch/data-MVATree/Wtaunu*.root");
+	//tsignal->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0406_leadin2jet_forMVATreeSR/fetch/data-MVATree/EWVVjj_MGPy8-*.root");
+	tsignal->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/EWVVjj_MGPy8-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/Zmumu*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/Zee*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/Ztautau*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/ttbar_dilep_PwPy8-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/stops_PwPy8-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/stopt_PwPy8-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/stopWt_dilep_PwPy8-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/ZqqZll_Sh221-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/ZqqZvv_Sh221-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/WqqZll_Sh221-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/WqqWlv_Sh221-*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/Wenu*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/Wmunu*.root");
+	tbackground->Add("/eos/user/m/mfujimot/CONDOR_output/output_testCondor_llqqPF_mc16aEMPflow_0408_forMVATreeSRVBS2/fetch/data-MVATree/Wtaunu*.root");
         
 	//inputFile->GetObject("Nominal", tsignal);
 	//inputFileBG->GetObject("Nominal", tbackground);
