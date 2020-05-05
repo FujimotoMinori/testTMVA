@@ -1,13 +1,12 @@
-int runCutflowByRegion(){
-//std::string savefilename = "Cutflow2LepTMVA";
-std::string savefilename = "Cutflow2LepTMVA";
-//std::string inputFileName = "TMVAppcategory.root";
+int runCutflowByRegion_Sensitivity0419(){
+std::string savefilename = "Cutflow2LepTMVA_sensitivity0429";
 std::string inputFileName = "TMVAppcategory.root";
 //std::string cutflowDirectoryName = "CutFlow_Dilep/Nominal";
 
 //end of input and stuff to change
 TFile *f1 = new TFile(inputFileName.c_str(),"READ"); cout<<"processing file " << inputFileName.c_str() << endl;
 //TDirectory *cutflowDirectory = f1->GetDirectory(cutflowDirectoryName.c_str());
+std::vector<double> sigma = {0.10,0.20};
 vector<std::string> cutflowCategoryNames, cutflowRegionNames;
 vector<TH1F*> cutflows;
 TIter keyList(f1->GetListOfKeys()); //originally cutflowDirectory
@@ -36,12 +35,19 @@ savefile << "\\providecommand{\\xmark}{{\\sffamily \\bfseries X}}\n \\providecom
 for(std::string counter : cutflowCategoryNames){
   savefile << " r ";
 }
-savefile << "|| r r r r r r r r |} \n \\ensuremath{\\sqrt{s}=13 TeV}, \\ensuremath{\\mathcal{L}=36 fb^{-1}} "; 
+savefile << "|| r r r r r r ";
+for(auto sig: sigma){
+	savefile << " r" ;
+}
+savefile << " |} \n \\ensuremath{\\sqrt{s}=13 TeV}, \\ensuremath{\\mathcal{L}=36 fb^{-1}} "; 
 for(std::string mcName : cutflowCategoryNames){
   if(mcName != "data") savefile << " & " << mcName.c_str();
 }
-savefile << "& Data & Data/MC & Total MC & Signal/BG & \\ensuremath{S/\\sqrt{B}} & \\ensuremath{S/\\sqrt{B}}wUC($\\sigma=0.20$) & Z & ZwUC($\\sigma=0.20$)";
-savefile << "\\tabularnewline \n \\hline \n";
+savefile << "& Data & Data/MC & Total MC & Signal/BG & \\ensuremath{S/\\sqrt{B}} & Z";
+for(auto sig: sigma){
+ savefile << "& ZwUC($\\sigma=$" << sig << ")";
+}
+savefile << " \\tabularnewline \n \\hline \n";
 //print table
 TH1F* histToShow;
 f1->GetObject(("data"+cutflowRegionName).c_str(), histToShow);
@@ -51,11 +57,7 @@ for(int i = 1; i < histToShow->GetNbinsX(); i++){
   double mcTotal = 0;
   double Signal = 0;
   double BG = 0;
-  double sigma = 0;
-  double sigmaBG = 0; 
-  double SoBwU = 0; 
   double Z = 0;
-  double ZwU = 0;
   for(std::string mcName : cutflowCategoryNames){
     TH1F* readCutflow;
     f1->GetObject((mcName+cutflowRegionName).c_str(), readCutflow);
@@ -71,14 +73,19 @@ for(int i = 1; i < histToShow->GetNbinsX(); i++){
   std::cout << "dataTotal=" << dataTotal << std::endl;
   if((dataTotal==0)||(mcTotal == 0)) {cout << "ERROR: either mc or data has 0 events !!" <<endl; mcTotal = 1;}
   //calcurate sensitivity
-  sigma = 0.20;
-  sigmaBG = sigma * BG; 
-  SoBwU =  Signal/sqrt(BG+pow(sigmaBG,2));
   Z =  sqrt(2*(mcTotal*std::log(1+Signal/BG)-Signal));
-  ZwU =  sqrt(2*(mcTotal*std::log(mcTotal*(BG+pow(sigmaBG,2))/(pow(BG,2)+mcTotal*pow(sigmaBG,2)))-(pow(BG,2)/pow(sigmaBG,2))*std::log(1+(pow(sigmaBG,2)*Signal)/(BG*(BG+pow(sigmaBG,2))))));
-  std::cout << "Signal= " << Signal << " BG= " << BG << " SigmaBG= " << sigmaBG << std::endl;
-  
-  savefile << " & " << dataTotal << " & " << dataTotal/mcTotal << " & " << mcTotal << "&" << Signal/BG << " & " << Signal/sqrt(BG) << " & " << SoBwU<<" & " <<  Z << "&" << ZwU; 
+  savefile << " & " << dataTotal << " & " << dataTotal/mcTotal << " & " << mcTotal << " & " << Signal/BG  << " & " << Signal/sqrt(BG) <<  " & " <<  Z;
+  for(auto sig: sigma){
+	  double sigmaBG = 0; 
+	  double SoBwU = 0; 
+	  double ZwU = 0;
+	  sigmaBG = sig * BG; 
+          ZwU = Signal/sqrt(BG+pow(sigmaBG,2));
+          std::cout << "sigma= " << sig << " sigBG= " << sigmaBG << std::endl;
+	  //SoBwU =  Signal/sqrt(BG+pow(sigmaBG,2));
+	  //ZwU =  sqrt(2*(mcTotal*std::log(mcTotal*(BG+pow(sigmaBG,2))/(pow(BG,2)+mcTotal*pow(sigmaBG,2)))-(pow(BG,2)/pow(sigmaBG,2))*std::log(1+(pow(sigmaBG,2)*Signal)/(BG*(BG+pow(sigmaBG,2))))));
+	  savefile << "&" << ZwU; 
+  }
   savefile << "\\tabularnewline \\hline \n";
 }
 savefile << "\\end{tabular}\n }";
